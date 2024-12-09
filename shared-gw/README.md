@@ -9,3 +9,8 @@ When the platform team creates namespaces they label the application team's name
 Each application has listeners defined in the GKE Gateway - with a unique subdomain. This avoids any possible route duplication between applications. A wildcard cert could be used to protect the Gateway in this case.
 
 Via `allowedRoutes` the application teams can ONLY create `HTTPRoute` for the platform-managed gateway for their subdomain.
+
+To test:
+
+```curl -H "host: foo.chilm.com" http://[GATEWAY_IP_ADDRESS]/```
+```curl -H "host: bar.chilm.com" http://[GATEWAY_IP_ADDRESS]/```
