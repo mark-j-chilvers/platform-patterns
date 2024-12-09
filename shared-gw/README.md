@@ -13,4 +13,5 @@ Via `allowedRoutes` the application teams can ONLY create `HTTPRoute` for the pl
 To test:
 
 ```curl -H "host: foo.chilm.com" http://[GATEWAY_IP_ADDRESS]/```
+
 ```curl -H "host: bar.chilm.com" http://[GATEWAY_IP_ADDRESS]/```
