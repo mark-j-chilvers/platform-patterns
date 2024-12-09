@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bar
+  namespace: bar1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bar
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: bar
+        version: v1
+    spec:
+      containers:
+      - name: whereami
+        image: us-docker.pkg.dev/google-samples/containers/gke/whereami:v1.2.20
+        ports:
+          - containerPort: 8080
+        env:
+        - name: METADATA
+          value: "bar"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bar
+  namespace: bar1
+spec:
+  selector:
+    app: bar
+    version: v1
+  ports:
+  - port: 8080
+    targetPort: 8080
