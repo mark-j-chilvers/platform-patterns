@@ -6,7 +6,7 @@ An application team may have one or more assigned namespaces. Application teams 
 
 When the platform team creates namespaces they label the application team's namespaces to align with a particular application (in this case, foo and bar).
 
-Each application has listeners defined in the GKE Gateway - with a unique subdomain. This avoids any possible route duplication between applications. A wildcard cert could be used to protect the Gateway in this case.
+Each application has listeners defined in the GKE Gateway - with a unique subdomain. This avoids any possible route duplication (i.e. conflict) between applications. A wildcard cert could be used to protect the Gateway in this case.
 
 Via `allowedRoutes` the application teams can ONLY create `HTTPRoute` for the platform-managed gateway for their subdomain.
 
