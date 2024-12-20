@@ -1,6 +1,6 @@
 <H1>Shared Gateway pattern</H1>
 
-This pattern allows a platform team to define application namespaces that can be delegated to individual application teams.
+This pattern allows a platform team to define application namespaces that can be delegated to individual application teams - in this example we're concerned with responsibility to create routes to individual services.
 
 An application team may have one or more assigned namespaces. Application teams are assigned permissions only on their namespaces.
 
@@ -10,7 +10,7 @@ Each application has listeners defined in the GKE Gateway - with a unique subdom
 
 Via `allowedRoutes` the application teams can ONLY create `HTTPRoute` for the platform-managed gateway for their subdomain.
 
-To test:
+To test (for example):
 
 ```curl -H "host: foo.chilm.com" http://[GATEWAY_IP_ADDRESS]/```
 
