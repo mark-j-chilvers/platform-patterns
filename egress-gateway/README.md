@@ -50,6 +50,7 @@ kubectl apply -f - <<EOF
                   averageUtilization: 60
                   type: Utilization
               type: Resource
+EOF
 ```
 
 ## mTLS Passthru
@@ -57,42 +58,43 @@ kubectl apply -f - <<EOF
 Apply this to the `shared-eg` namespace
 
 ```
-apiVersion: gateway.networking.k8s.io/v1
-kind: GatewayClass
-metadata:
-  name: eg
-spec:
-  controllerName: gateway.envoyproxy.io/gatewayclass-controller
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: eg
-spec:
-  gatewayClassName: eg
-  infrastructure:
-    parametersRef:
-      group: gateway.envoyproxy.io
-      kind: EnvoyProxy
-      name: custom-proxy-config
-  listeners:
-    - name: tls
-      protocol: TLS
-      hostname: passthrough.example.com
-      port: 6443
-      tls:
-        mode: Passthrough
-      allowedRoutes:
-      kinds:
-      - kind: TCPRoute
-
+kubectl apply -f -n shared-eg - <<EOF
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: GatewayClass
+  metadata:
+    name: eg
+  spec:
+    controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  ---
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: eg
+  spec:
+    gatewayClassName: eg
+    infrastructure:
+      parametersRef:
+        group: gateway.envoyproxy.io
+        kind: EnvoyProxy
+        name: custom-proxy-config
+    listeners:
+      - name: tls
+        protocol: TLS
+        hostname: passthrough.example.com
+        port: 6443
+        tls:
+          mode: Passthrough
+        allowedRoutes:
+        kinds:
+        - kind: TCPRoute
+EOF
 ```
 Now we'll deploy a backend that will echo the request.
 
 Create a namespace
 `kubectl create ns backend`
 
-Now we'll create the certs.
+First we'll create certs.
 
 Note: These certificates will not be used by the Gateway, but will remain in the application scope.
 
@@ -108,89 +110,91 @@ openssl req -out passthrough.example.com.csr -newkey rsa:2048 -nodes -keyout pas
 openssl x509 -req -sha256 -days 365 -CA example.com.crt -CAkey example.com.key -set_serial 0 -in passthrough.example.com.csr -out passthrough.example.com.crt
 ```
 
-Store the cert/keys in A Secret:
+Store the cert/keys in a Secret:
 
 ```
 kubectl create secret tls server-certs -n backend --key=passthrough.example.com.key --cert=passthrough.example.com.crt
 ```
 
-Apply this to ns backend
+Apply this to namespace backend
 ```
-apiVersion: v1
-kind: Service
-metadata:
-  name: passthrough-echoserver
-  labels:
-    run: passthrough-echoserver
-spec:
-  ports:
-    - port: 443
-      targetPort: 8443
-      protocol: TCP
-  selector:
-    run: passthrough-echoserver
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: passthrough-echoserver
-spec:
-  selector:
-    matchLabels:
+kubectl apply -f -n backend - <<EOF
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: passthrough-echoserver
+    labels:
       run: passthrough-echoserver
-  replicas: 1
-  template:
-    metadata:
-      labels:
+  spec:
+    ports:
+      - port: 443
+        targetPort: 8443
+        protocol: TCP
+    selector:
+      run: passthrough-echoserver
+  ---
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: passthrough-echoserver
+  spec:
+    selector:
+      matchLabels:
         run: passthrough-echoserver
-    spec:
-      containers:
-        - name: passthrough-echoserver
-          image: gcr.io/k8s-staging-gateway-api/echo-basic:v20231214-v1.0.0-140-gf544a46e
-          ports:
-            - containerPort: 8443
-          env:
-            - name: HTTPS_PORT
-              value: "8443"
-            - name: TLS_SERVER_CERT
-              value: /etc/server-certs/tls.crt
-            - name: TLS_SERVER_PRIVKEY
-              value: /etc/server-certs/tls.key
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-          volumeMounts:
-            - name: server-certs
-              mountPath: /etc/server-certs
-              readOnly: true
-      volumes:
-        - name: server-certs
-          secret:
-            secretName: server-certs
----
-apiVersion: gateway.networking.k8s.io/v1alpha2
-kind: TLSRoute
-metadata:
-  name: tlsroute
-spec:
-  parentRefs:
-    - name: eg
-      namespace: shared-eg
-      sectionName: tls
-  hostnames:
-    - "passthrough.example.com"
-  rules:
-    - backendRefs:
-        - group: ""
-          kind: Service
-          name: passthrough-echoserver
-          port: 443
-          weight: 1
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          run: passthrough-echoserver
+      spec:
+        containers:
+          - name: passthrough-echoserver
+            image: gcr.io/k8s-staging-gateway-api/echo-basic:v20231214-v1.0.0-140-gf544a46e
+            ports:
+              - containerPort: 8443
+            env:
+              - name: HTTPS_PORT
+                value: "8443"
+              - name: TLS_SERVER_CERT
+                value: /etc/server-certs/tls.crt
+              - name: TLS_SERVER_PRIVKEY
+                value: /etc/server-certs/tls.key
+              - name: POD_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+            volumeMounts:
+              - name: server-certs
+                mountPath: /etc/server-certs
+                readOnly: true
+        volumes:
+          - name: server-certs
+            secret:
+              secretName: server-certs
+  ---
+  apiVersion: gateway.networking.k8s.io/v1alpha2
+  kind: TLSRoute
+  metadata:
+    name: tlsroute
+  spec:
+    parentRefs:
+      - name: eg
+        namespace: shared-eg
+        sectionName: tls
+    hostnames:
+      - "passthrough.example.com"
+    rules:
+      - backendRefs:
+          - group: ""
+            kind: Service
+            name: passthrough-echoserver
+            port: 443
+            weight: 1
+EOF
 ```
 
 Test by curling the IP address of the Gateway.
@@ -198,6 +202,7 @@ Test by curling the IP address of the Gateway.
 **Note** We provisioned an internal LB, so please have a bastion host in the same subnet to test. 
 
 `export GATEWAY_HOST=$(kubectl get gateway/eg -o jsonpath='{.status.addresses[0].value}')`
+
 Curl the example app through the Gateway, e.g. Envoy proxy:
 
 `curl -v -HHost:passthrough.example.com --resolve "passthrough.example.com:6443:${GATEWAY_HOST}" \
