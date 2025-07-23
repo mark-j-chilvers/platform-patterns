@@ -1,4 +1,4 @@
-# Egress Gateway scenarios
+# Envoy Gateway scenarios
 
 - (m)TLS Passthrough
 - mTLS validation and client cert forwarding
