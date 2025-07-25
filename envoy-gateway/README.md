@@ -58,7 +58,7 @@ EOF
 Apply this to the `shared-eg` namespace
 
 ```
-kubectl apply -f -n shared-eg - <<EOF
+kubectl apply -n shared-eg -f - <<EOF
   apiVersion: gateway.networking.k8s.io/v1
   kind: GatewayClass
   metadata:
