@@ -5,7 +5,7 @@ kind: Gateway
    apiVersion: gateway.networking.k8s.io/v1beta1
    metadata:
      name: gateway
-     namespace: fox-gw
+     namespace: gw-shared
    spec:
      gatewayClassName: gke-l7-rilb
      listeners:
@@ -30,7 +30,7 @@ metadata:
 spec:
   parentRefs:
   - name: gateway
-    namespace: fox-gw
+    namespace: gw-shared
     sectionName: gateway-pre-shared-cert
   hostnames:
   - "store.chilm.com"
