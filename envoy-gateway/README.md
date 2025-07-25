@@ -21,7 +21,9 @@ and associating it with either the `GatewayClass` or the `Gateway`.
 
 First let's create a namespace for the Egress Gateway deployments (to separate platform concerns).
 
-`kubectl create ns shared-eg`
+```
+kubectl create ns shared-eg
+```
 
 Now let's apply the following:
 
@@ -92,7 +94,9 @@ EOF
 Now we'll deploy a backend that will echo the request.
 
 Create a namespace
-`kubectl create ns backend`
+```
+kubectl create ns backend
+```
 
 First we'll create certs.
 
@@ -118,7 +122,7 @@ kubectl create secret tls server-certs -n backend --key=passthrough.example.com.
 
 Apply this to namespace backend
 ```
-kubectl apply -f -n backend - <<EOF
+kubectl apply -n backend -f - <<EOF
   apiVersion: v1
   kind: Service
   metadata:
@@ -201,7 +205,9 @@ Test by curling the IP address of the Gateway.
 
 **Note** We provisioned an internal LB, so please have a bastion host in the same subnet to test. 
 
-`export GATEWAY_HOST=$(kubectl get gateway/eg -o jsonpath='{.status.addresses[0].value}')`
+```
+export GATEWAY_HOST=$(kubectl get gateway/eg -o jsonpath='{.status.addresses[0].value}')
+```
 
 Curl the example app through the Gateway, e.g. Envoy proxy:
 
