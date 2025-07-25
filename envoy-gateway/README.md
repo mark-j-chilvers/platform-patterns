@@ -88,7 +88,7 @@ kubectl apply -n shared-eg -f - <<EOF
           mode: Passthrough
         allowedRoutes:
           kinds:
-          - kind: TCPRoute
+          - kind: TLSRoute
 EOF
 ```
 Now we'll deploy a backend that will echo the request.
