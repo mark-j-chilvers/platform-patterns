@@ -62,6 +62,16 @@ Apply this to the `shared-eg` namespace
 ```
 kubectl apply -n shared-eg -f - <<EOF
   apiVersion: gateway.networking.k8s.io/v1
+  kind: GatewayClass
+  metadata:
+    name: eg
+  spec:
+    controllerName: gateway.envoyproxy.io/gatewayclass-controller
+EOF
+```
+```
+kubectl apply -n shared-eg -f - <<EOF
+  apiVersion: gateway.networking.k8s.io/v1
   kind: Gateway
   metadata:
     name: eg
