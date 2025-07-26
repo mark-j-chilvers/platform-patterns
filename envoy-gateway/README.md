@@ -139,7 +139,10 @@ kubectl apply -n backend -f - <<EOF
         protocol: TCP
     selector:
       run: passthrough-echoserver
-  ---
+EOF
+```
+```
+kubectl apply -n backend -f - <<EOF
   apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -182,7 +185,10 @@ kubectl apply -n backend -f - <<EOF
           - name: server-certs
             secret:
               secretName: server-certs
-  ---
+EOF
+```
+```
+kubectl apply -n backend -f - <<EOF
   apiVersion: gateway.networking.k8s.io/v1alpha2
   kind: TLSRoute
   metadata:
