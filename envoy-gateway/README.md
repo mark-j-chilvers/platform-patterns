@@ -67,6 +67,11 @@ kubectl apply -n shared-eg -f - <<EOF
     name: eg
   spec:
     gatewayClassName: eg
+    infrastructure:
+      parametersRef:
+        group: gateway.envoyproxy.io
+        kind: EnvoyProxy
+        name: custom-proxy-config
     listeners:
       - name: tls
         protocol: TLS
