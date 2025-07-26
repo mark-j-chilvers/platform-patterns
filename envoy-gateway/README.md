@@ -62,13 +62,6 @@ Apply this to the `shared-eg` namespace
 ```
 kubectl apply -n shared-eg -f - <<EOF
   apiVersion: gateway.networking.k8s.io/v1
-  kind: GatewayClass
-  metadata:
-    name: eg
-  spec:
-    controllerName: gateway.envoyproxy.io/gatewayclass-controller
-  ---
-  apiVersion: gateway.networking.k8s.io/v1
   kind: Gateway
   metadata:
     name: eg
@@ -77,7 +70,7 @@ kubectl apply -n shared-eg -f - <<EOF
     listeners:
       - name: tls
         protocol: TLS
-        hostname: passthrough.example.com
+        hostname: "passthrough.example.com"
         port: 6443
         tls:
           mode: Passthrough
