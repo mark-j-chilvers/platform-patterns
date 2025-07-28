@@ -92,6 +92,8 @@ kubectl apply -n shared-eg -f - <<EOF
         allowedRoutes:
           kinds:
           - kind: TLSRoute
+          namespaces:
+            from: All
 EOF
 ```
 Now we'll deploy a backend that will echo the request.
