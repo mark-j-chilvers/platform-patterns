@@ -215,7 +215,7 @@ Test by curling the IP address of the Gateway.
 **Note** We provisioned an internal LB, so please have a bastion host in the same subnet to test. 
 
 ```
-export GATEWAY_HOST=$(kubectl get gateway/eg -o jsonpath='{.status.addresses[0].value}')
+export GATEWAY_HOST=$(kubectl get gateway/eg -n shared-eg -o jsonpath='{.status.addresses[0].value}')
 ```
 
 Curl the example app through the Gateway, e.g. Envoy proxy:
