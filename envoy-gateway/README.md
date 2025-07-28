@@ -220,5 +220,6 @@ export GATEWAY_HOST=$(kubectl get gateway/eg -n shared-eg -o jsonpath='{.status.
 
 Curl the example app through the Gateway, e.g. Envoy proxy:
 
-`curl -v -HHost:passthrough.example.com --resolve "passthrough.example.com:6443:${GATEWAY_HOST}" \
---cacert example.com.crt https://passthrough.example.com:6443/get`
+```
+curl -v -HHost:passthrough.example.com --resolve "passthrough.example.com:6443:${GATEWAY_HOST}" --cacert example.com.crt https://passthrough.example.com:6443/get
+```
