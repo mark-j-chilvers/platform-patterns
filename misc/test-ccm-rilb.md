@@ -78,3 +78,9 @@ And now apply it
 kubectl apply -f gateway-and-route.yaml
 ```
 
+Test from a bastion in the same region:
+```
+curl https://store.chilm.com --resolve store.chilm.com:443:10.150.0.3 --cacert CERTIFICATE_FILE -v
+```
+(passing in the CA cert previously created)
+
