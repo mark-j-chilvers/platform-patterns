@@ -1,7 +1,7 @@
 # Envoy Gateway scenarios
 
 - (m)TLS Passthrough
-- mTLS validation and client cert forwarding
+- mTLS validation and client cert forwarding (in progress)
 
 ## Common set up
 
