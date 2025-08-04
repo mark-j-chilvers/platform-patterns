@@ -124,7 +124,7 @@ Store the cert/keys in a Secret:
 ```
 kubectl create secret tls server-certs -n backend --key=passthrough.example.com.key --cert=passthrough.example.com.crt
 export CACERT=cat example.com.crt | base64 -w0
-kubectl patch secret server-certs -n backend -p '{"data":{"ca.crt":"' + ${CACERT} + '"}}'
+kubectl patch secret server-certs -n backend -p '{"data":{"ca.crt":"'${CACERT}'"}}'
 ```
 
 Apply this to namespace backend
