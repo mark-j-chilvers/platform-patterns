@@ -123,6 +123,8 @@ Store the cert/keys in a Secret:
 
 ```
 kubectl create secret tls server-certs -n backend --key=passthrough.example.com.key --cert=passthrough.example.com.crt
+export CACERT=cat example.com.crt | base64 -w0
+kubectl patch secret server-certs -n backend -p '{"data":{"ca.crt":"' + ${CACERT} + '"}}'
 ```
 
 Apply this to namespace backend
@@ -171,6 +173,8 @@ kubectl apply -n backend -f - <<EOF
                 value: /etc/server-certs/tls.crt
               - name: TLS_SERVER_PRIVKEY
                 value: /etc/server-certs/tls.key
+              - name: TLS_CLIENT_CACERTS
+                value: /etc/server-certs/ca.crt
               - name: POD_NAME
                 valueFrom:
                   fieldRef:
@@ -223,5 +227,5 @@ export GATEWAY_HOST=$(kubectl get gateway/eg -n shared-eg -o jsonpath='{.status.
 Curl the example app through the Gateway, e.g. Envoy proxy:
 
 ```
-curl -v -HHost:passthrough.example.com --resolve "passthrough.example.com:6443:${GATEWAY_HOST}" --cacert example.com.crt https://passthrough.example.com:6443/get
+curl -v -HHost:passthrough.example.com --resolve "passthrough.example.com:6443:${GATEWAY_HOST}" --cacert example.com.crt --cert client.example.com.crt --key client.example.com.key https://passthrough.example.com:6443/get
 ```
