@@ -119,7 +119,13 @@ openssl req -out passthrough.example.com.csr -newkey rsa:2048 -nodes -keyout pas
 openssl x509 -req -sha256 -days 365 -CA example.com.crt -CAkey example.com.key -set_serial 0 -in passthrough.example.com.csr -out passthrough.example.com.crt
 ```
 
-Store the cert/keys in a Secret:
+Create client certificates (for testing in final step):
+```
+openssl req -out client.example.com.csr -newkey rsa:2048 -nodes -keyout client.example.com.key -subj "/CN=client.example.com/O=example organization"
+openssl x509 -req -days 365 -CA example.com.crt -CAkey example.com.key -set_serial 0 -in client.example.com.csr -out client.example.com.crt
+```
+
+Store the server cert/keys in a Secret. Patch with CA cert to allow echo of client certs:
 
 ```
 kubectl create secret tls server-certs -n backend --key=passthrough.example.com.key --cert=passthrough.example.com.crt
